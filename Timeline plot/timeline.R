@@ -5,65 +5,77 @@ require(data.table)
 require(ggplot2)
 require(grid)
 
-setwd("/Users/jpz1/Research/Projects/PER/Kasia")
+# set working directory
+setwd("/Users/jpz1/Programming/R/random-r-code/Timeline plot")
 
-data.full <- read.csv("T1.csv")
+# read in the data file 
+data.full <- read.csv("data.csv")
 
-#breaksx <- seq(1, length(data$start.time), 5)
-#labelsx <- substr(as.POSIXct(data$start.time[seq(1, length(data$start.time), 5)],
-#                             tz="",format = "%H:%M:%S",origin = "1900-01-01"),15,19)
+# re-organize the data frame
+temp.1 <- data.full[,c(1,2,4,5)]
+temp.2 <- cbind(group=1+data.full[,1], data.full[,c(3:5)])
+colnames(temp.1) <- colnames(temp.2) <- c("group", "event", "start.time", "end.time")
+data <- rbind(temp.1, temp.2)
 
-labelsy <- c("First-S", "First-T", "Second-S", "Second-T", "Third-S", "Third-T")
+# assignign labels to plots
+labels.y <- c("A: car", "A: performannce", "B: car", "B: performannce", "C: car", "C: performannce")
 
-labelsy <- c("First-S", "Second-S")#,  "Third-T")
-data <- data.full[data.full$group %in% c(1,2),]
-
-
-SetTimeline <- data.table(Set=gsub(" ","",tolower(data$event1)),
-                          StartTime = as.POSIXct(data$start.time,tz="",format = "%H:%M:%S",origin = "1900-01-01"), 
-                          EndTime = as.POSIXct(data$end.time,tz="",format = "%H:%M:%S",origin = "1900-01-01"), 
+# setting up the timeline data
+SetTimeline <- data.table(Set=gsub(" ","",tolower(data$event)),
+                          StartTime = as.POSIXct(data$start.time,tz="",format = "%H:%M:%S"), 
+                          EndTime = as.POSIXct(data$end.time,tz="",format = "%H:%M:%S"), 
                           group = data$group)
 
+# setting colors for plots
 my_cols <- c("#ACCDEA", "#F0B6AE", "#D1D69C", "#B4AFCA", "#F8A31B","#B4AFCA", "#F8A31B")
 
+pdf("my_plot.pdf", width = 8, height = 2)
 ggplot(SetTimeline) +
-  geom_segment(aes(colour=Set, 
+  geom_segment(aes(colour=Set,
                    x=StartTime, xend=EndTime, 
                    y=group, yend=group, 
-                   group = group), size=5) +
+                   group = group), size=4) +
   scale_colour_manual(values = my_cols) +
   theme(panel.grid.major.x = element_line(size = 0.25, colour = "grey50",linetype = "dashed"),
         panel.grid.major.y = element_blank(),
         panel.grid.minor = element_blank(), 
         panel.background = element_blank(),
         panel.ontop = TRUE,
-        aspect.ratio=0.10,
+        plot.margin=unit(c(0.25,0,0,0.25), "cm"),
+        aspect.ratio=0.15,
         axis.ticks.x = element_line(size = 0.25),
         axis.ticks.y = element_blank(),
-        axis.text.x = element_text(colour='black', angle = 0, size = 8, hjust = 0.5, vjust = 1),
-        axis.text.y = element_text(colour='black', angle = 0, size = 8, hjust = 1, vjust = 0.5, 
-                                   margin = margin(0, -0.5, 0, 0, "cm")),
+        axis.text.x = element_text(colour='black', angle = 0, size = 8, hjust = 0.5, vjust = 1.0),
+        axis.text.y = element_text(colour='black', angle = 0, size = 8, hjust = 1.0, vjust = 0.5),
         legend.text = element_text(colour='black', size = 8),
         legend.title = element_text(colour='black', size = 0),
         legend.position = 'bottom',
         plot.title = element_text(colour='black', size = 12),
-        panel.spacing  = unit(1, "cm")) +
+        panel.spacing  = unit(c(0,0,0,0), "in")) +
+  guides(fill = guide_legend(ncol = 2, byrow = TRUE)) +
   xlab(NULL) + 
   ylab(NULL) +
-  ggtitle("Data timeline with marked sets") +
- # scale_x_discrete("Time",breaksx,labelsx) +#length(data$start.time)))#breaks=breaksx,labels=labelsx) 
-  scale_y_continuous("Activity",
-                     labels = labelsy,
-                     breaks = c(1:length(labelsy)),
-                     limits = c(0,7)#length(labelsy)+1)
+  ggtitle("Timeline with marked sets for two tracks: car vs. performance") +
+  scale_y_continuous("Teams",
+                     expand = c(0.1,0),
+                     labels = labels.y,
+                     breaks = c(1:length(labels.y))
                      )
-
-ggsave("filename.tiff", plot = last_plot(), device = "tiff", dpi = 1500, width = 9, height = 2, units = "in")
-
+dev.off()
 
 
+## -- thing to do: adding more ticks on the x-axis
+# scale_x_discrete("Time",breaksx,labelsx) +#length(data$start.time)))#breaks=breaksx,labels=labelsx) 
+#--- to work with 
+#breaksx <- seq(1, length(data$start.time), 5)
+#labelsx <- substr(as.POSIXct(data$start.time[seq(1, length(data$start.time), 5)],
+#                             tz="",format = "%H:%M:%S",origin = "1900-01-01"),15,19)
 
+## -- thing to do: sort the legend
+#my.sort <- factor(c("Audi", "BMW", "good", "average", "poor"))
+# https://www.rdocumentation.org/packages/ggplot2/versions/1.0.0/topics/scale_x_continuous
 
-
-
-
+# -- thing to do: add automatic control for what is beign plotted, e.g.,
+#labels.y <- c("A-performance", "A-car")
+#labels.y <- c("A-performance", "B-performance", "C-performance")
+#data <- data.full[data.full$group %in% c(1,2),]
