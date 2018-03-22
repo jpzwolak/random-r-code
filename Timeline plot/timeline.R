@@ -1,5 +1,7 @@
 rm(list=ls())
-require(data.table) #install.packages("name")
+
+# loading the required packages; if any of the packages is not installed, use install.packages("name")
+require(data.table)
 require(ggplot2)
 require(grid)
 
