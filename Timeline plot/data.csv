@@ -1,4 +1,4 @@
-group,event1,event2,start.time,end.time
+group,car,performance,start.time,end.time
 1,BMW,poor,0:00:00,0:01:52
 1,BMW,good,0:01:52,0:02:00
 1,BMW,good,0:02:00,0:02:06
