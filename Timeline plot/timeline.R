@@ -4,18 +4,17 @@ rm(list=ls())
 require(data.table)
 require(ggplot2)
 require(grid)
+library(dplyr)
 
 # set working directory
-setwd("/Users/jpz1/Programming/R/random-r-code/Timeline plot")
+setwd("/Users/jpzwolak/Research/Projects/R/random-r-code/Timeline plot")
 
 # read in the data file 
 data.full <- read.csv("data.csv")
 
 # re-organize the data frame
-temp.1 <- data.full[,c(1,2,4,5)]
-temp.2 <- cbind(group=1+data.full[,1], data.full[,c(3:5)])
-colnames(temp.1) <- colnames(temp.2) <- c("group", "event", "start.time", "end.time")
-data <- rbind(temp.1, temp.2)
+data <- melt(data.full,  measure.vars=2:3, value.name = "event", value.factor = TRUE)
+data$event <- as.factor(data$event)
 
 # assignign labels to plots
 labels.y <- c("A: car", "A: performannce", "B: car", "B: performannce", "C: car", "C: performannce")
