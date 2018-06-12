@@ -82,8 +82,8 @@ group,car,performance,start.time,end.time
 5,BMW,good,0:00:33,0:00:34
 5,BMW,poor,0:00:34,0:05:45
 5,BMW,good,0:05:45,0:10:25
-5,Audi,average,0:10:25,0:10:40
-5,Audi,average,0:10:40,0:11:27
+5,Audi,good,0:10:25,0:10:40
+5,Audi,good,0:10:40,0:11:27
 5,Audi,poor,0:11:27,0:13:19
 5,Audi,poor,0:13:19,0:13:29
 5,Audi,poor,0:13:29,0:19:29

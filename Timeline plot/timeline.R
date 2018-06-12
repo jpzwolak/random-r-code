@@ -13,17 +13,26 @@ setwd("/Users/jpzwolak/Research/Projects/R/random-r-code/Timeline plot")
 data.full <- read.csv("data.csv")
 
 # re-organize the data frame
-data <- melt(data.full,  measure.vars=2:3, value.name = "event", value.factor = TRUE)
-data$event <- as.factor(data$event)
+data <- melt(data.full,  measure.vars=2:3)
+data$value <- as.factor(data$value)
+data[data$variable=="performance",]$run <- data[data$variable=="performance",]$run+1
+
+within(data, run <- run + 1)
+
+
+temp.1 <- data.full[,c(1,2,4,5)]
+temp.2 <- cbind(group=1+data.full[,1], data.full[,c(3:5)])
+colnames(temp.1) <- colnames(temp.2) <- c("group", "event", "start.time", "end.time")
+data2 <- rbind(temp.1, temp.2)
 
 # assignign labels to plots
 labels.y <- c("A: car", "A: performannce", "B: car", "B: performannce", "C: car", "C: performannce")
 
 # setting up the timeline data
-SetTimeline <- data.table(Set=gsub(" ","",tolower(data$event)),
+SetTimeline <- data.table(Set=gsub(" ","",data$value),
                           StartTime = as.POSIXct(data$start.time,tz="",format = "%H:%M:%S"), 
                           EndTime = as.POSIXct(data$end.time,tz="",format = "%H:%M:%S"), 
-                          group = data$group)
+                          run = data$run)
 
 # setting colors for plots
 my_cols <- c("#ACCDEA", "#F0B6AE", "#D1D69C", "#B4AFCA", "#F8A31B","#B4AFCA", "#F8A31B")
@@ -32,8 +41,8 @@ pdf("my_plot.pdf", width = 8, height = 2)
 ggplot(SetTimeline) +
   geom_segment(aes(colour=Set,
                    x=StartTime, xend=EndTime, 
-                   y=group, yend=group, 
-                   group = group), size=4) +
+                   y=run, yend=run, 
+                   group = run), size=4) +
   scale_colour_manual(values = my_cols) +
   theme(panel.grid.major.x = element_line(size = 0.25, colour = "grey50",linetype = "dashed"),
         panel.grid.major.y = element_blank(),
@@ -55,7 +64,7 @@ ggplot(SetTimeline) +
   xlab(NULL) + 
   ylab(NULL) +
   ggtitle("Timeline with marked sets for two tracks: car vs. performance") +
-  scale_y_continuous("Teams",
+  scale_y_continuous("Groups",
                      expand = c(0.1,0),
                      labels = labels.y,
                      breaks = c(1:length(labels.y))
