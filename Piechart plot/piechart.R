@@ -32,9 +32,9 @@ df.data$group <- ifelse(df.data$category == "performance", df.data$group+1, df.d
 pie.val = vector("list", length = 2)
 for (i in 1:3){
   temp.1 <- df.data[df.data$group == 2*i-1,]
-  temp.2 <- df.data[df.data$group == 2*i,]
+  #temp.2 <- df.data[df.data$group == 2*i,]
   pie.val[[1]][[i]] <- tapply(temp.1$length, temp.1$value, sum, simplify = TRUE)
-  pie.val[[2]][[i]] <- tapply(temp.2$length, temp.2$value, sum, simplify = TRUE)
+  #pie.val[[2]][[i]] <- tapply(temp.2$length, temp.2$value, sum, simplify = TRUE)
 }
 
 # create list of data frames with pie data
